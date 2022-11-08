@@ -1,8 +1,6 @@
 package com.example.absencemanagementapp
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,13 +8,10 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import com.example.absencemanagementapp.helpers.Helper.Companion.checkInternetConnection
-import com.example.absencemanagementapp.helpers.Helper.Companion.isConnected
 import com.example.absencemanagementapp.models.Student
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import dev.shreyaspatil.MaterialDialog.MaterialDialog
 import java.util.*
 
 class LoginActivity : AppCompatActivity() {
@@ -87,14 +82,10 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // If sign in fails, display a dialog to the user.
-                MaterialDialog.Builder(this)
-                    .setTitle("Login Failed")
-                    .setMessage("Invalid email or password")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok") { _, _ -> }
-                    .build()
-                    .show()
+                // If sign in fails, display a message to the user
+                Toast.makeText(
+                    baseContext, "Authentication failed. Please try again.", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -119,22 +110,6 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
             else -> true
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        //check if user is connected to the internet
-        if (!isConnected(this)) {
-            MaterialDialog.Builder(this)
-                .setTitle("No Internet Connection")
-                .setMessage("Please check your internet connection and try again")
-                .setCancelable(false)
-                .setPositiveButton("Ok") { _, _ ->
-                    checkInternetConnection(this, this)
-                }
-                .build()
-                .show()
         }
     }
 }
