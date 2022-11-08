@@ -17,7 +17,6 @@ import com.example.absencemanagementapp.models.Teacher
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.shashank.sony.fancytoastlib.FancyToast
 import java.util.*
 
 class TeacherRegisterFragment : Fragment() {
@@ -79,34 +78,40 @@ class TeacherRegisterFragment : Fragment() {
                 val id = FirebaseAuth.getInstance().currentUser!!.uid
                 ref.child(id).setValue(teacher).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        FancyToast.makeText(
+                        Toast.makeText(
                             requireContext(),
-                            "You have been registered successfully",
-                            Toast.LENGTH_SHORT,
-                            FancyToast.SUCCESS,
-                            false
+                            "Teacher registered successfully",
+                            Toast.LENGTH_SHORT
                         ).show()
                         redirectToLogin()
                     } else {
-                        FancyToast.makeText(
+                        Toast.makeText(
                             requireContext(),
                             "Error: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT,
-                            FancyToast.ERROR,
-                            false
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
             } else {
-                FancyToast.makeText(
-                    requireContext(),
-                    "Error: ${task.exception?.message}",
-                    Toast.LENGTH_SHORT,
-                    FancyToast.ERROR,
-                    false
-                ).show()
+                Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
+
+        var teacher = Teacher(
+            first_name_et.text.toString().trim().uppercase(Locale.getDefault()),
+            last_name_et.text.toString().trim().uppercase(Locale.getDefault()),
+            cin_et.text.toString().trim().uppercase(Locale.getDefault()),
+            email_et.text.toString(),
+            password_et.text.toString()
+        )
+        database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("teachers")
+        ref.child(teacher.cin).setValue(teacher)
+        Toast.makeText(context, "Teacher registered successfully", Toast.LENGTH_SHORT).show()
+
+        //redirect to login
+        redirectToLogin()
     }
 
     private fun redirectToLogin() {
@@ -137,47 +142,38 @@ class TeacherRegisterFragment : Fragment() {
         return when {
             first_name.isEmpty() -> {
                 first_name_et.error = "First name is required"
-                first_name_et.requestFocus()
                 false
             }
             last_name.isEmpty() -> {
                 last_name_et.error = "Last name is required"
-                last_name_et.requestFocus()
                 false
             }
             cin.isEmpty() -> {
                 cin_et.error = "CIN is required"
-                cin_et.requestFocus()
                 false
             }
             email.isEmpty() -> {
                 email_et.error = "Email is required"
-                email_et.requestFocus()
                 false
             }
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                 email_et.error = "Email is not valid"
-                email_et.requestFocus()
                 false
             }
             password.isEmpty() -> {
                 password_et.error = "Password is required"
-                password_et.requestFocus()
                 false
             }
             password.length < 6 -> {
                 password_et.error = "Password must be at least 6 characters"
-                password_et.requestFocus()
                 false
             }
             confirm_password.isEmpty() -> {
                 confirm_password_et.error = "Confirm password is required"
-                confirm_password_et.requestFocus()
                 false
             }
             password != confirm_password -> {
                 confirm_password_et.error = "Passwords don't match"
-                confirm_password_et.requestFocus()
                 false
             }
             else -> true
