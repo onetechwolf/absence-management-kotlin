@@ -1,17 +1,14 @@
 package com.example.absencemanagementapp
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import com.example.absencemanagementapp.models.Student
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 class StudentActivity : AppCompatActivity() {
     private lateinit var user_name_tv: TextView
-    private lateinit var logout_cv: CardView
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -24,7 +21,7 @@ class StudentActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         //initiate views
-        initViews()
+        user_name_tv = findViewById(R.id.user_name_tv)
 
         //get user name
         val user_id = auth.currentUser!!.uid
@@ -34,28 +31,5 @@ class StudentActivity : AppCompatActivity() {
                 user_name_tv.text = student!!.first_name
             }
         }
-
-        //dashboard cards handling
-        logout_cv.setOnClickListener {
-            auth.signOut()
-            //redirect to login activity
-        }
-    }
-
-    private fun initViews() {
-        user_name_tv = findViewById(R.id.user_name_tv)
-        logout_cv = findViewById(R.id.logout_cv)
-    }
-
-    //logout
-    private fun logout() {
-
-    }
-
-    //redirect to login activity
-    private fun redirectToLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 }

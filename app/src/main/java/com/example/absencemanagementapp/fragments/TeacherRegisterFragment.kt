@@ -17,7 +17,6 @@ import com.example.absencemanagementapp.models.Teacher
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.shashank.sony.fancytoastlib.FancyToast
 import java.util.*
 
 class TeacherRegisterFragment : Fragment() {
@@ -79,34 +78,40 @@ class TeacherRegisterFragment : Fragment() {
                 val id = FirebaseAuth.getInstance().currentUser!!.uid
                 ref.child(id).setValue(teacher).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        FancyToast.makeText(
+                        Toast.makeText(
                             requireContext(),
-                            "You have been registered successfully",
-                            Toast.LENGTH_SHORT,
-                            FancyToast.SUCCESS,
-                            false
+                            "Teacher registered successfully",
+                            Toast.LENGTH_SHORT
                         ).show()
                         redirectToLogin()
                     } else {
-                        FancyToast.makeText(
+                        Toast.makeText(
                             requireContext(),
                             "Error: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT,
-                            FancyToast.ERROR,
-                            false
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
             } else {
-                FancyToast.makeText(
-                    requireContext(),
-                    "Error: ${task.exception?.message}",
-                    Toast.LENGTH_SHORT,
-                    FancyToast.ERROR,
-                    false
-                ).show()
+                Toast.makeText(context, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
+
+        var teacher = Teacher(
+            first_name_et.text.toString().trim().uppercase(Locale.getDefault()),
+            last_name_et.text.toString().trim().uppercase(Locale.getDefault()),
+            cin_et.text.toString().trim().uppercase(Locale.getDefault()),
+            email_et.text.toString(),
+            password_et.text.toString()
+        )
+        database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("teachers")
+        ref.child(teacher.cin).setValue(teacher)
+        Toast.makeText(context, "Teacher registered successfully", Toast.LENGTH_SHORT).show()
+
+        //redirect to login
+        redirectToLogin()
     }
 
     private fun redirectToLogin() {
