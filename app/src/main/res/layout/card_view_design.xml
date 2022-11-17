@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_margin="8dp"
+    android:layout_marginBottom="16dp"
     android:background="@drawable/card_ui">
 
     <ImageView
@@ -38,4 +39,5 @@
             android:textSize="28sp"
             android:textStyle="bold" />
     </LinearLayout>
+
 </RelativeLayout>
