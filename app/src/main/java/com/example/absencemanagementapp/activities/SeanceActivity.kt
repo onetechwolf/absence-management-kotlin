@@ -36,7 +36,7 @@ class SeanceActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         //initiate views
-        initViews()
+        initView()
 
         //get seance from intent
         setDatas()
@@ -48,7 +48,7 @@ class SeanceActivity : AppCompatActivity() {
         show_qr_code.setOnClickListener({ showQrCode() })
     }
 
-    private fun initViews() {
+    private fun initView() {
         module_intitule_tv = this.findViewById(R.id.module_intitule_tv)
         back_iv = findViewById(R.id.back_arrow)
         absence_list_cv = this.findViewById(R.id.absence_list_cv)
@@ -63,11 +63,11 @@ class SeanceActivity : AppCompatActivity() {
 
     private fun getCurrentSeance(id: Int): Seance {
         val seances = ArrayList<Seance>()
-        seances.add(Seance("16/11/2022", "TP", "08:30", "10:15", "Salle 1", 0))
-        seances.add(Seance("16/11/2022", "Cours", "10:30", "12:15", "Salle 2", 0))
-        seances.add(Seance("16/11/2022", "Exam", "12:30", "14:15", "Salle 3", 0))
-        seances.add(Seance("16/11/2022", "Cours", "14:30", "16:15", "Salle 4", 0))
-        seances.add(Seance("16/11/2022", "TP", "16:30", "18:15", "Salle 5", 0))
+        seances.add(Seance("16/11/2022", "08:30", "10:15", "TP", "Salle 1", 0))
+        seances.add(Seance("16/11/2022", "10:30", "12:15", "Cours", "Salle 2", 0))
+        seances.add(Seance("16/11/2022", "12:30", "14:15", "Exam", "Salle 3", 0))
+        seances.add(Seance("16/11/2022", "14:30", "16:15", "Cours", "Salle 4", 0))
+        seances.add(Seance("16/11/2022", "16:30", "18:15", "TP", "Salle 5", 0))
         return seances[id]
     }
 
