@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.absencemanagementapp.R
 import com.example.absencemanagementapp.models.Seance
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class SeanceActivity : AppCompatActivity() {
     lateinit var module_intitule_tv: TextView
@@ -23,12 +25,18 @@ class SeanceActivity : AppCompatActivity() {
     lateinit var salle_nb_tv: TextView
     lateinit var total_absence_tv: TextView
 
+    private lateinit var database: FirebaseDatabase
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_seance)
 
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+
         //initiate views
-        initView()
+        initViews()
 
         //get seance from intent
         setDatas()
@@ -40,7 +48,7 @@ class SeanceActivity : AppCompatActivity() {
         show_qr_code.setOnClickListener({ showQrCode() })
     }
 
-    private fun initView() {
+    private fun initViews() {
         module_intitule_tv = this.findViewById(R.id.module_intitule_tv)
         back_iv = findViewById(R.id.back_arrow)
         absence_list_cv = this.findViewById(R.id.absence_list_cv)
@@ -70,11 +78,15 @@ class SeanceActivity : AppCompatActivity() {
     }
 
     private fun showQrCode() {
-        println("showQrCode")
+        //get seance from database
+        database.getReference("seances").child(auth.currentUser!!.uid).get().addOnSuccessListener {
+            val seance = it.getValue(Seance::class.java)
+            //TODO: show qr code
+        }
     }
 
     private fun showAbsenceList() {
-        println("showAbsenceList")
+        //TODO: show absence list
     }
 
     private fun setDatas() {
