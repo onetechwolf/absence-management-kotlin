@@ -57,8 +57,7 @@ class ModuleActivity : AppCompatActivity() {
         println("Before intent ===> " + currentModuleIntitule)
         rv = findViewById<RecyclerView>(R.id.seances_rv)
         rv.layoutManager = LinearLayoutManager(this)
-        val seanceAdapter =
-            SeanceAdapter(seances, this, currentModuleIntitule)
+        val seanceAdapter = SeanceAdapter(seances, this, currentModuleIntitule)
         rv.adapter = seanceAdapter
     }
 
@@ -67,30 +66,26 @@ class ModuleActivity : AppCompatActivity() {
         module_name_tv = this.findViewById(R.id.module_intitule_tv)
         module_name_tv.text = currentModuleIntitule
 
-        back_iv = this.findViewById(R.id.back_arrow)
-        back_iv.setOnClickListener({ back() })
+        back_iv.setOnClickListener { back() }
 
-        absence_list_cv = this.findViewById(R.id.absence_list_cv)
-        absence_list_cv.setOnClickListener({ toAbsenceListView() })
+        absence_list_cv.setOnClickListener { toAbsenceListView() }
 
-        new_seance_cv = this.findViewById(R.id.new_seance_cv)
-        new_seance_cv.setOnClickListener({ toNewSeanceView() })
+        new_seance_cv.setOnClickListener { toNewSeanceView() }
 
-        seances_swipe = this.findViewById(R.id.seances_swipe)
         seances_swipe.setOnRefreshListener {
             getSeances()
             seances_swipe.isRefreshing = false
         }
     }
 
-    @JvmName("setCurrentModuleIntitule1")
     private fun setCurrentModuleIntitule(id: Int) {
 
-        dbRef.getReference("modules").child(id.toString()).child("intitule").get().addOnSuccessListener {
-            if (it.exists()) {
-                module_name_tv.text = it.value.toString()
+        dbRef.getReference("modules").child(id.toString()).child("intitule").get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    module_name_tv.text = it.value.toString()
+                }
             }
-        }
     }
 
     private fun getSeances() {
@@ -107,14 +102,7 @@ class ModuleActivity : AppCompatActivity() {
                     val n_module = parseInt(ds.child("n_module").value.toString())
                     val total_absences = parseInt(ds.child("total_absences").value.toString())
                     var seance = Seance(
-                        id,
-                        date,
-                        start_time,
-                        end_time,
-                        type,
-                        n_salle,
-                        n_module,
-                        total_absences
+                        id, date, start_time, end_time, type, n_salle, n_module, total_absences
                     )
                     seances.add(seance)
                 }
