@@ -49,9 +49,11 @@ class ModuleActivity : AppCompatActivity() {
     }
 
     private fun initSeances(seances: ArrayList<Seance>) {
-        currentModuleIntitule = intent.getStringExtra("module_intitule")
+        currentModuleId = intent.getIntExtra("module_id", -1)
+        setCurrentModuleIntitule(currentModuleId)
+
         currentModuleIntitule = module_name_tv.text as String?
-        currentModuleId = intent.getIntExtra("id", -1)
+
         rv = findViewById<RecyclerView>(R.id.seances_rv)
         rv.layoutManager = LinearLayoutManager(this)
         val module = Module()
