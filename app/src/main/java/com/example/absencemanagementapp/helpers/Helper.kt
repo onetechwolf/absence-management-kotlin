@@ -104,11 +104,11 @@ class Helper {
 
         //change language
         fun changeLanguage(language: String, activity: AppCompatActivity) {
-            val locale = Locale(language)
-            val config = activity.resources.configuration
-            config.setLocale(locale)
-
-            activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+            when (language) {
+                "en" -> activity.resources.configuration.setLocale(Locale("en"))
+                "fr" -> activity.resources.configuration.setLocale(Locale("fr"))
+                "ar" -> activity.resources.configuration.setLocale(Locale("ar"))
+            }
 
             //save language to shared preferences
             saveLanguage(language, activity)
