@@ -81,6 +81,13 @@ class AbsenceAdapter(
             holder.absence_layout.setBackgroundResource(R.drawable.absent_bg);
         }
 
+        //add animation to list
+        holder.itemView.startAnimation(
+            AnimationUtils.loadAnimation(
+                context, R.anim.absence_list_anim
+            )
+        )
+
         //click on item
         holder.itemView.setOnClickListener {
             val dialog = Dialog(context)
