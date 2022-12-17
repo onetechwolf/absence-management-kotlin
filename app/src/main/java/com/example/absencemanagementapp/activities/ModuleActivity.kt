@@ -16,7 +16,10 @@ import com.example.absencemanagementapp.adapters.SeanceAdapter
 import com.example.absencemanagementapp.models.Module
 import com.example.absencemanagementapp.models.Seance
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.lang.Integer.parseInt
 
 class ModuleActivity : AppCompatActivity() {
@@ -66,7 +69,7 @@ class ModuleActivity : AppCompatActivity() {
 
         back_iv.setOnClickListener { back() }
 
-        absence_list_cv.setOnClickListener { exportExcel() }
+        absence_list_cv.setOnClickListener { toAbsenceListView() }
 
         new_seance_cv.setOnClickListener { toNewSeanceView() }
 
@@ -133,8 +136,9 @@ class ModuleActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun exportExcel() {
-//        export to excel
-        Log.d("debug", "Export to excel")
+    private fun toAbsenceListView() {
+        val intent = Intent(this, TeacherActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
