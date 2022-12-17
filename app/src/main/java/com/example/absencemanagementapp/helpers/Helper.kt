@@ -97,18 +97,18 @@ class Helper {
         }
 
         //get theme from shared preferences
-        fun loadTheme(activity: AppCompatActivity): String {
+        fun lodaTheme(activity: AppCompatActivity): String {
             val sharedPreferences = activity.getSharedPreferences("settings", Context.MODE_PRIVATE)
             return sharedPreferences.getString("theme", "system").toString()
         }
 
         //change language
         fun changeLanguage(language: String, activity: AppCompatActivity) {
-            val locale = Locale(language)
-            val config = activity.resources.configuration
-            config.setLocale(locale)
-
-            activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+            when (language) {
+                "en" -> activity.resources.configuration.setLocale(Locale("en"))
+                "fr" -> activity.resources.configuration.setLocale(Locale("fr"))
+                "ar" -> activity.resources.configuration.setLocale(Locale("ar"))
+            }
 
             //save language to shared preferences
             saveLanguage(language, activity)
@@ -138,9 +138,7 @@ class Helper {
         }
 
         fun formatStudentName(first_name: String, last_name: String): String {
-            return first_name.toCharArray()[0].toUpperCase() + first_name.substring(1).toLowerCase(
-                Locale.ROOT
-            ) + " " + last_name.toLowerCase(Locale.ROOT)
+            return first_name.toCharArray()[0].toUpperCase() + first_name.substring(1).toLowerCase() + " " + last_name.toLowerCase()
         }
 
         fun shorten(string: String, length: Int): String {
