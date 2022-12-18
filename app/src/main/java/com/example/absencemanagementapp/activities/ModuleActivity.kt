@@ -1,16 +1,11 @@
 package com.example.absencemanagementapp.activities
 
-import android.app.Activity
-import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -21,11 +16,10 @@ import com.example.absencemanagementapp.adapters.SeanceAdapter
 import com.example.absencemanagementapp.models.Module
 import com.example.absencemanagementapp.models.Seance
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.poifs.filesystem.POIFSFileSystem
-import java.io.FileOutputStream
-import java.io.InputStream
+import com.google.firebase.database.ValueEventListener
 import java.lang.Integer.parseInt
 
 class ModuleActivity : AppCompatActivity() {
@@ -75,7 +69,7 @@ class ModuleActivity : AppCompatActivity() {
 
         back_iv.setOnClickListener { back() }
 
-        absence_list_cv.setOnClickListener { createExcelFile() }
+        absence_list_cv.setOnClickListener { toAbsenceListView() }
 
         new_seance_cv.setOnClickListener { toNewSeanceView() }
 
@@ -142,132 +136,9 @@ class ModuleActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun exportExcel() {
-        val fileChooser = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-            type = "application/vnd.ms-excel"
-        }
-        startActivityForResult(
-            Intent.createChooser(fileChooser, R.string.select_directory.toString()),
-            REQUEST_CODE_CHOOSE_DIRECTORY
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_CHOOSE_DIRECTORY && resultCode == RESULT_OK) {
-            val uri = data?.data
-            if (uri != null) {
-//                createExcelFile(this, uri)
-                Log.e("debug", "Selected file: $uri")
-            }
-        }
-    }
-
-    private fun createExcelFile() {
-        val file_path = getExternalFilesDir(null)?.absolutePath
-        val file_name = "absences.xls"
-
-        Log.e("debug", "file_path: $file_path/$file_name")
-
-        try {
-            val outputStream = FileOutputStream("$file_path/$file_name")
-            val workbook = HSSFWorkbook()
-
-            // export to excel
-            var rowNum = 0
-            var cellNum = 3
-
-            Log.d("debug", "Export to excel")
-            workbook.createSheet("Absences")
-            val sheet = workbook.getSheetAt(0)
-            val row = sheet.createRow(++rowNum)
-
-            row.createCell(1).setCellValue("CNE")
-            row.createCell(2).setCellValue("Nom")
-            row.createCell(3).setCellValue("Prénom")
-
-            dbRef.getReference("inscription").get().addOnSuccessListener {
-                for (ds in it.children) {
-                    if (ds.child("n_module").value.toString().equals(currentModuleId)) {
-                        val row = sheet.createRow(++rowNum)
-                        dbRef.getReference("students").get().addOnSuccessListener {
-                            for (ds1 in it.children) {
-                                if (ds1.child("cne").value.toString()
-                                        .equals(ds.child("cne").value.toString())
-                                ) {
-                                    row.createCell(1)
-                                        .setCellValue(ds1.child("cne").value.toString())
-                                    Log.e("debug", "cne: ${ds1.child("cne").value.toString()}")
-
-                                    row.createCell(2)
-                                        .setCellValue(ds1.child("first_name").value.toString())
-                                    Log.e(
-                                        "debug",
-                                        "first_name: ${ds1.child("first_name").value.toString()}"
-                                    )
-
-                                    row.createCell(3)
-                                        .setCellValue(ds1.child("last_name").value.toString())
-                                    Log.e(
-                                        "debug",
-                                        "last_name: ${ds1.child("last_name").value.toString()}"
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                dbRef.getReference("seances").get().addOnSuccessListener {
-                    rowNum = 1
-
-                    for (ds2 in it.children) {
-                        if (ds2.child("n_module").value.toString().equals(currentModuleId)) {
-                            row.createCell(++cellNum).setCellValue(
-                                ds2.child("date").value.toString() + " " + ds2.child("start_time").value.toString() + " - " + ds2.child(
-                                    "end_time"
-                                ).value.toString() + " (" + ds2.child("type").value.toString() + ")"
-                            )
-
-                            dbRef.getReference("absences").get().addOnSuccessListener {
-                                for (ds3 in it.children) {
-                                    if (ds3.child("seance_id").value.toString()
-                                            .equals(ds2.child("id").value.toString()) && ds3.child(
-                                            "cne"
-                                        ).value.toString()
-                                            .equals(row.getCell(1).toString())
-                                    ) {
-                                        when (ds3.child("_present").value.toString()) {
-                                            "true" -> {
-                                                row.createCell(cellNum).setCellValue("P")
-                                                Log.e("debug", "Present")
-                                            }
-                                            "false" -> {
-                                                row.createCell(cellNum).setCellValue("A")
-                                                Log.e("debug", "Absent")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    workbook.write(outputStream)
-                    workbook.close()
-                    outputStream.close()
-
-                    Toast.makeText(this, "Excel file saved", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener {
-                Log.e("debug", "Error getting inscription data", it)
-            }
-        } catch (e: Exception) {
-            Log.e("debug", "Error creating excel file", e)
-        }
-    }
-
-    companion object {
-        private val REQUEST_CODE_CHOOSE_DIRECTORY = 1
+    private fun toAbsenceListView() {
+        val intent = Intent(this, TeacherActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
